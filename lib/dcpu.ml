@@ -180,19 +180,17 @@ let dump p =
   List.iter (fun x -> Printf.printf "%04x " x) p;
   print_newline ()
 
-let () =
+
+let%expect_test _ =
   (* TODO recursive tree structure for (hidden) labels! *)
   let prog = [`Int, `EX, `SmallImmediate 3;
               `Set, `Register A, `Register I;
               `Add, `Register A, `SmallImmediate 2;
               `Set, `Register I, `Register A] in
-  let actual = List.map assemble prog |> List.concat in
-  let expected = [0x9100; 0x1801; 0x8c02; 0x00c1] in
-  print_endline "actual:";
-  dump actual;
-  print_endline "expected:";
-  dump expected;
-  print_endline (if actual = expected then "success" else "failure")
+  List.map assemble prog |> List.concat |> dump;
+  [%expect {|
+  9100 1801 8c02 00c1
+  |}]
 
 (*
 let l : [< lvalue] list = [`Push; `SP]
